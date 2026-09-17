@@ -1,5 +1,5 @@
 ---
-VERSION: "1.29.1"
+VERSION: "1.30.0"
 description: "README do baladapp-ia-config — visão geral, instalação, atualização e skills opcionais."
 ---
 
@@ -75,6 +75,7 @@ Skills copiadas pelo instalador para `~/.cursor/skills/eduardolagares/` (Cursor)
 |-------|-----------|
 | `comitar` | Lê `git diff`/staging, gera mensagem curta em pt-BR e executa `git add` + `git commit` sem pedir confirmação. |
 | `escrever-tarefa` | Entrevista (grill-me em `~/.agents`, `~/.cursor` ou `~/.claude`); texto livre ou ficheiro (referência ou continuar `docs/tarefas/*.md`). |
+| `revisar-ders` | Revisor read-only do DERS no Monday (título idêntico): coesão RF/UC/CA, Cenário, suficiência funcional e aceite por CA. Não implementa nem altera o Monday. |
 | `gerar-plano-de-implementacao` | No projeto a alterar: avalia estrutura de código + grill-me; cobre RFs/UCs/Impactos com nomes concretos; grava em `docs/planos-de-implementacao/`. |
 | `planejar-tenant` | Plan enxuto de tenant (`docs/plans/<id>/`) neste clone; brief/estilo/negócio/logo na fonte do ingressos. Entrevista só na 1ª vez. Não implementa nem commita. |
 | `spec-implementer` | Doc Cenário/RF/UC → código + testes; plano em `docs/specs/`; pergunta só o crítico; nunca reporta pronto com testes vermelhos. |
@@ -86,7 +87,7 @@ Skills copiadas pelo instalador para `~/.cursor/skills/eduardolagares/` (Cursor)
 | `monday-task-info` | Passo 1 de `revisar-tarefa`: contexto Monday só via MCP da IDE. |
 | `revisar-tarefa` | Fluxo Monday em 8 passos: contexto, requisitos, diff GitLab (MCP da IDE), code review, verificação, doc Revisar código, avaliação e pós-avaliação (MRs + coluna **Ação** Concluir/Rejeitar). Substitui `agendar-revisao-tarefa` e `executar-revisao-tarefa`. |
 
-No **Cursor**, `/revisar-tarefa` exige **Monday** e **GitLab** ligados em **Settings → MCP** (passo 1 via `monday-task-info`; passos 3 e 8 via MCP GitLab da IDE — sem tokens nem scripts de API).
+No **Cursor**, `/revisar-tarefa` exige **Monday** e **GitLab** ligados em **Settings → MCP** (passo 1 via `monday-task-info`; passos 3 e 8 via MCP GitLab da IDE — sem tokens nem scripts de API). `/revisar-ders` exige só o MCP **Monday**.
 
 ---
 
