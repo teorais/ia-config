@@ -7,7 +7,7 @@ description: >-
   até entendimento completo; grava em docs/tarefas/; após gravar, pode acionar criar-tarefa-no-monday.
   Use com /escrever-tarefa.
 disable-model-invocation: true
-VERSION: "2.7.4"
+VERSION: "2.7.5"
 ---
 
 # escrever-tarefa
@@ -22,14 +22,14 @@ Comportar-se como **analista de sistemas** ou **product owner**: o artefato desc
 
 | Incluir no documento | Excluir do documento |
 |----------------------|----------------------|
-| Cenário (contexto, relevância, necessidade; `sequenceDiagram` quando pertinente — ver § Cenário) | Código, pseudocódigo, snippets |
+| Cenário (contexto, relevância, necessidade; `sequenceDiagram` só no gate § Cenário) | Código, pseudocódigo, snippets |
 | RFs atômicos, validações e comportamentos verificáveis | Classes, métodos, gems, frameworks, APIs internas |
 | UCs em passos com referência a RF e diagrama Mermaid | Migrações, tabelas, colunas, índices |
 | Impactos (repositório e, se necessário, tela) | Arquivos, paths, controllers, jobs, testes |
 | Critérios de aceite para agentes de IA (caminhos + resultados) | Detalhe de stack, deploy, performance técnica |
 | Mensagens ao usuário em linguagem de negócio | |
 
-**Exploração do codebase** (quando grill-me o permitir): só para **entender** domínio, fluxos e telas existentes. No artefato, **traduzir** prosa, RFs, UCs e CAs para linguagem funcional. Exceção: `sequenceDiagram` **pode** (e deve, quando ajudar) usar classe, método, participante técnico e chamada — ver § Cenário.
+**Exploração do codebase** (quando grill-me o permitir): só para **entender** domínio, fluxos e telas existentes. No artefato, **traduzir** prosa, RFs, UCs e CAs para linguagem funcional. Exceção estreita: se o gate do § Cenário autorizar `sequenceDiagram`, aí classe/método/chamada podem aparecer **só** nesse bloco.
 
 O **chat** pode mencionar código para clarificar dúvidas com o usuário; o **arquivo gravado** não.
 
@@ -117,11 +117,19 @@ Classificar mentalmente cada trecho ( **não** apresentar classificação estrut
 
 Prosa curta (2–4 frases): o que muda, para quem, por que é necessária.
 
-**Diagrama de sequência no Cenário (quando pertinente):** incluir **um** `sequenceDiagram` Mermaid **depois do parágrafo**, na mesma seção, **sem linha em branco** entre o parágrafo e a abertura ` ```mermaid `. Não é obrigatório em toda tarefa.
+**Diagrama de sequência — default omitir.** Não colocar `sequenceDiagram` no Cenário nem em UC. O template **não** inclui esse bloco; não copiar o exemplo abaixo “por completar a seção”.
 
-Incluir quando a mudança se entende melhor pela **troca entre atores** do que pela prosa — típico de consulta a serviço parceiro, confirmação em dois tempos, orquestração entre telas/sistemas, sucesso vs falha no meio do caminho. **Não** incluir em ajuste de um campo, texto, flag ou tela isolada sem colaboração.
+**Gate (as três têm de ser verdadeiras):** só então **um** `sequenceDiagram` no Cenário, **depois do parágrafo**, **sem linha em branco** entre a prosa e ` ```mermaid `.
 
-O diagrama **resume** o Cenário; não substitui RFs nem UCs. Em `sequenceDiagram`, **pode usar classe e método** (e deve, quando o fluxo for de colaboração técnica): participantes como `RegistrationContainer`, mensagens como `consultar(cpf:)`. A prosa do Cenário, os RFs e os UCs continuam em linguagem de negócio.
+1. **≥ 3 participantes distintos** que trocam mensagem (pessoa + pelo menos dois sistemas/papéis). User + uma tela **não** passa.
+2. O miolo da mudança **é a ordem e o resultado** dessas mensagens (dois tempos, callback, parceiro no meio, sucesso vs falha no meio do caminho).
+3. Um `flowchart` no UC **não** bastaria para o mesmo entendimento.
+
+**Fora do gate (omitir):** CRUD, campo, texto, flag, filtro, listagem, tela isolada, um formulário sem chamada a outro papel, “só para ilustrar”. Em dúvida → omitir. **Nunca** `sequenceDiagram` em UC.
+
+O diagrama, se existir, **resume** o Cenário; não substitui RFs nem UCs. Classe, método e participante técnico **só** nesse bloco (ex.: `RegistrationContainer`, `consultar(cpf:)`). Prosa, RFs, passos de UC e CAs continuam em linguagem de negócio.
+
+Exemplo **somente** se o gate passou (não é o formato padrão do Cenário):
 
 ```mermaid
 sequenceDiagram
@@ -179,8 +187,7 @@ Formato por UC:
 - Passos: bullets `-`; **um passo por item**; **sem linha em branco** entre relacionamento (se houver) e primeiro passo, nem entre passos; citar RFs como `(RF n)` ou “conforme RF n” nos passos que aplicam regras.
 - **Não** repetir no passo o texto integral do RF — referenciar.
 - **Diagrama Mermaid** (obrigatório em cada UC): bloco ` ```mermaid ` **na linha imediatamente após** o último passo, **sem linha em branco** entre lista de passos e abertura do bloco; um diagrama por UC.
-  - Preferir `flowchart` para jornadas e decisões; `sequenceDiagram` quando o foco for troca ator↔sistema.
-  - `sequenceDiagram` (no Cenário ou no UC): classe, método e participante técnico são permitidos. `flowchart` dos UCs permanece em nomes de tela/funcionalidade.
+  - **Sempre** `flowchart LR`. **Proibido** `sequenceDiagram` no UC (sequência, se o gate do § Cenário passar, fica **só** no Cenário).
   - `flowchart` **sempre** na horizontal: `flowchart LR`. **Nunca** `flowchart TD` — no Monday a imagem entra com largura fixa e diagrama vertical vira uma tira alta e ilegível, obrigando a converter depois.
   - Rótulos em pt-BR; refletir passos principais e resultado; citar RFs nos nós quando aplicável (ex.: `RF 3`).
   - Em `flowchart`: nomes de **telas** ou **funcionalidades**, nunca classes ou arquivos; só nós que mudam decisão ou estado.
@@ -320,7 +327,7 @@ O documento **sempre** inicia com a seção **Cenário** e **termina** com **Cri
 
 | Bloco | Conteúdo contíguo (sem linha em branco interna) | Linha em branco depois |
 |-------|---------------------------------------------------|------------------------|
-| Seção Cenário | `### **Cenário:**` + parágrafo + `sequenceDiagram` (se pertinente) | Sim — antes da próxima seção |
+| Seção Cenário | `### **Cenário:**` + parágrafo (+ `sequenceDiagram` **só** se o gate do § Cenário passar) | Sim — antes da próxima seção |
 | Seção Requisitos | `### **Requisitos funcionais:**` + agrupamentos | Sim — antes de Casos de uso |
 | Agrupamento RF | `**Título:**` + lista de RFs | Sim — antes do próximo agrupamento |
 | UC | título + `Relacionamento:` (se houver) + passos + bloco Mermaid | Sim — antes do próximo UC |
@@ -333,14 +340,7 @@ Usar **exatamente** esta estrutura (substituir conteúdo; manter headings, negri
 ```markdown
 ### **Cenário:**
 [Contextualizar a alteração: o que muda, relevância e por que é necessária. Prosa curta — preferir 2–4 frases.]
-```mermaid
-sequenceDiagram
-  participant User
-  participant Form as RegistrationContainer
-  User->>Form: Digita CPF
-  Form->>Form: consultar(cpf:)
-```
-_(Omitir o `sequenceDiagram` do Cenário se a tarefa não tiver troca entre atores.)_
+_(Não incluir `sequenceDiagram` aqui. Só acrescentar o bloco mermaid se o gate do § Cenário — ≥3 participantes, ordem/resultado das mensagens, flowchart do UC insuficiente — for verdadeiro.)_
 
 ### **Requisitos funcionais:**
 **Formulário de cadastro:**
@@ -384,7 +384,7 @@ flowchart LR
 Regras adicionais:
 
 - Renumerar RF/UC/CA de forma contínua ao fundir ou remover.
-- Cenário: prosa + `sequenceDiagram` **somente** quando a colaboração entre atores for o miolo da mudança; omitir o diagrama se não acrescentar leitura.
+- Cenário: prosa. `sequenceDiagram` **só** se o gate do § Cenário passar (default omitir). UC: só `flowchart LR`.
 - RFs concentram regras; UCs narram fluxo e **referenciam** RFs — não duplicar texto de RF nos passos; o Mermaid **resume** o fluxo, não substitui a lista de passos.
 - CAs descrevem caminhos + resultados esperados para aceite; referências a UC/RF são opcionais.
 - Omitir linha `Relacionamento:` se o UC for independente.
@@ -399,8 +399,8 @@ Regras adicionais:
 - Apresentar rascunho ou pré-visualização do documento **antes** do entendimento completo.
 - Implementar código, migrações ou testes neste fluxo.
 - No **documento gravado**: código, pseudocódigo, paths, SQL, seção Telas separada, estimativas de esforço, texto prolixo, ambiguidade (“talvez”, “ou similar”, “TBD” sem placeholder acordado), português europeu (pt-PT), prefixo literal `CONTEXTO OU AÇÃO` / `CENÁRIO OU AÇÃO` nos agrupamentos de RF/CA. Nomes de classe/método **só** em `sequenceDiagram` — não na prosa, RFs, passos de UC nem CAs.
-- UC **sem** lista de passos **ou** sem diagrama Mermaid.
-- Diagrama de sequência no Cenário em tarefa em que não há troca entre atores.
+- UC **sem** lista de passos **ou** sem diagrama Mermaid; `sequenceDiagram` em UC; `flowchart TD` em UC.
+- `sequenceDiagram` no Cenário **sem** as três condições do gate (§ Cenário); copiar o exemplo de sequência “por ter seção Cenário”.
 - CA estruturado **sem** `Resultado esperado:`; CA estruturado com travessão `—` após o número (usar `CA n:`); gravar CA de fluxo não mapeado **sem** alerta e decisão do usuário.
 - Exigir CA atômico no estilo RF; inventar CA sem base em UC/RF; gravar CA ambíguo ou não interpretável por agentes de IA.
 - Duplicar ou sobrescrever defaults de board do monday (grupo, colunas, labels) nesta skill — responsabilidade exclusiva de **criar-tarefa-no-monday**.
